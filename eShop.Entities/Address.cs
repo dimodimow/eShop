@@ -1,17 +1,22 @@
 ﻿using eShop.Entities.Base;
-using System.Collections.Generic;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace eShop.Entities
 {
 	public class Address : BaseEntity
 	{
+		[Required]
 		public string Country { get; set; }
+		[Required]
 		public string City { get; set; }
+		[Required]
 		public string ZIP { get; set; }
+		[Required]
 		public string Street { get; set; }
 		public string Floor { get; set; }
-
-		//TODO: Remove the collection with users
-		public virtual ICollection<User> Users { get; set; }
+		public Guid UserId { get; set; }
+		public virtual User User { get; set; }
 	}
 }
