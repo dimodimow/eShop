@@ -1,5 +1,8 @@
+using eShop.Data;
+using eShop.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,6 +21,23 @@ namespace eShop
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddIdentity<User, Role>(options =>
+			{
+				options.SignIn.RequireConfirmedPhoneNumber = false;
+				options.Password.RequireNonAlphanumeric = false;
+				options.SignIn.RequireConfirmedAccount = false;
+				options.SignIn.RequireConfirmedEmail = false;
+				options.Password.RequireUppercase = false;
+				options.Password.RequireLowercase = false;
+				options.Password.RequiredUniqueChars = 0;
+				options.Password.RequireDigit = false;
+				options.Password.RequiredLength = 128;
+			})
+				.AddEntityFrameworkStores<EShopDbContext>();
+
+			services.AddDbContext<EShopDbContext>(
+				options => options.UseSqlServer(Configuration.GetConnectionString("eShopDatabase")));
+
 			services.AddControllers();
 			services.AddSwaggerGen(c =>
 			{
