@@ -8,8 +8,9 @@ namespace eShop.Data.Configurations
 	{
 		public void Configure(EntityTypeBuilder<Address> builder)
 		{
-			builder.HasMany(x => x.Users)
-				.WithOne(x => x.Address);
+			builder.HasOne(x => x.User)
+				.WithOne(x => x.Address)
+				.HasForeignKey<Address>(x => x.UserId);
 
 			builder.HasOne(x => x.CreatedBy)
 				.WithMany()

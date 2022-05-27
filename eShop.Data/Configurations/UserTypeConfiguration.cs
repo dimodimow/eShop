@@ -8,10 +8,9 @@ namespace eShop.Data.Configurations
 	{
 		public void Configure(EntityTypeBuilder<User> builder)
 		{
-			builder.HasOne(a => a.Address)
-					.WithMany(u => u.Users)
-					.HasForeignKey(x => x.AddressId)
-					.OnDelete(DeleteBehavior.Cascade);
+			builder.HasOne(x => x.Address)
+				.WithOne(x => x.User)
+				.HasForeignKey<User>(x => x.AddressId);
 
 			builder.HasOne(x => x.CreatedBy)
 					.WithMany()

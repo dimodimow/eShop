@@ -1,7 +1,7 @@
 ﻿using eShop.Entities.Base;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace eShop.Entities
 {
@@ -12,10 +12,11 @@ namespace eShop.Entities
 			this.CategoryProducts = new List<CategoryProduct>();
 		}
 
+		[Required]
 		public string Name { get; set; }
 
 		public Guid ParentCategoryId { get; set; }
-		public Category ParentCategory { get; set; }
+		public virtual Category ParentCategory { get; set; }
 
 		public virtual ICollection<CategoryProduct> CategoryProducts { get; set; }
 	}

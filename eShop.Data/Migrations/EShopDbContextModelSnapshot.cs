@@ -127,9 +127,11 @@ namespace eShop.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Country")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreatedById")
@@ -151,9 +153,14 @@ namespace eShop.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Street")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("ZIP")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -161,6 +168,9 @@ namespace eShop.Data.Migrations
                     b.HasIndex("CreatedById");
 
                     b.HasIndex("ModifiedById");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Addresses");
                 });
@@ -187,6 +197,7 @@ namespace eShop.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("ParentCategoryId")
@@ -359,6 +370,7 @@ namespace eShop.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
@@ -435,12 +447,14 @@ namespace eShop.Data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -483,8 +497,6 @@ namespace eShop.Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
 
                     b.HasIndex("CreatedById");
 
@@ -565,9 +577,17 @@ namespace eShop.Data.Migrations
                         .HasForeignKey("ModifiedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.HasOne("eShop.Entities.User", "User")
+                        .WithOne("Address")
+                        .HasForeignKey("eShop.Entities.Address", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("CreatedBy");
 
                     b.Navigation("ModifiedBy");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("eShop.Entities.Category", b =>
@@ -710,12 +730,6 @@ namespace eShop.Data.Migrations
 
             modelBuilder.Entity("eShop.Entities.User", b =>
                 {
-                    b.HasOne("eShop.Entities.Address", "Address")
-                        .WithMany("Users")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("eShop.Entities.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById")
@@ -727,16 +741,9 @@ namespace eShop.Data.Migrations
                         .HasForeignKey("ModifiedById")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Address");
-
                     b.Navigation("CreatedBy");
 
                     b.Navigation("ModifiedBy");
-                });
-
-            modelBuilder.Entity("eShop.Entities.Address", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("eShop.Entities.Category", b =>
@@ -758,6 +765,8 @@ namespace eShop.Data.Migrations
 
             modelBuilder.Entity("eShop.Entities.User", b =>
                 {
+                    b.Navigation("Address");
+
                     b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
