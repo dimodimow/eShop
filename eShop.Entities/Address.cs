@@ -11,6 +11,7 @@ namespace eShop.Entities
 		public string Street { get; set; }
 		public string Floor { get; set; }
 
+		//TODO: Remove the collection with users
 		public virtual ICollection<User> Users { get; set; }
 	}
 }
