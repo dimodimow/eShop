@@ -20,6 +20,7 @@ namespace eShop.Entities
 		public string LastName { get; set; }
 		[Required]
 		public DateTime DateOfBirth { get; set; }
+		[Required]
 		public User CreatedBy { get; set; }
 		public User ModifiedBy { get; set; }
 		public Guid CreatedById { get; set; }
