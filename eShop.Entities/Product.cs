@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace eShop.Entities
 {
-	public class Product : BaseEntity
+    public class Product : BaseEntity
 	{
 		public Product()
 		{
