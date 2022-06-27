@@ -8,37 +8,37 @@ using System.Threading.Tasks;
 
 namespace eShop.Repositories.UnitOfWork
 {
-	public class UnitOfWork : IUnitOfWork
-	{
-		private EShopDbContext context;
-		private UserManager<User> userManager;
+    public class UnitOfWork : IUnitOfWork
+    {
+        private EShopDbContext context;
+        private UserManager<User> userManager;
 
-		public UnitOfWork(EShopDbContext context, UserManager<User> userManager)
-		{
-			this.context = context;
-			this.userManager = userManager;
+        public UnitOfWork(EShopDbContext context, UserManager<User> userManager)
+        {
+            this.context = context;
+            this.userManager = userManager;
 
-			this.CategoryRepository = new Repository<Category>(context);
-			this.OrderRepository = new Repository<Order>(context);
-			this.ProductRepository = new Repository<Product>(context);
-			this.UserRepository = new UserRepository(context, userManager);
-		}
+            this.CategoryRepository = new CategoryRepository(context);
+            this.OrderRepository = new Repository<Order>(context);
+            this.ProductRepository = new Repository<Product>(context);
+            this.UserRepository = new UserRepository(context, userManager);
+        }
 
-		public IRepository<Category> CategoryRepository { get; set; }
-		public IRepository<Order> OrderRepository { get; set; }
-		public IRepository<Product> ProductRepository { get; set; }
-		public IUserRepository UserRepository { get; set; }
+        public ICategoryRepository CategoryRepository { get; set; }
+        public IRepository<Order> OrderRepository { get; set; }
+        public IRepository<Product> ProductRepository { get; set; }
+        public IUserRepository UserRepository { get; set; }
 
-		public void Dispose()
-		{
-			context.Dispose();
-			GC.SuppressFinalize(this);
-		}
+        public void Dispose()
+        {
+            context.Dispose();
+            GC.SuppressFinalize(this);
+        }
 
-		public async Task<bool> SaveChangesAsync()
-		{
-			return await context.SaveChangesAsync() > 0;
-		}
-	}
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await context.SaveChangesAsync() > 0;
+        }
+    }
 
 }

@@ -7,34 +7,58 @@ using System.Threading.Tasks;
 
 namespace eShop.Repositories
 {
-	public class UserRepository : Repository<User>, IUserRepository
-	{
-		private readonly UserManager<User> userManager;
+    public class UserRepository : Repository<User>, IUserRepository
+    {
+        private readonly UserManager<User> userManager;
 
-		public UserRepository(EShopDbContext context, UserManager<User> userManager) : base(context)
-		{
-			this.userManager = userManager;
-		}
+        public UserRepository(EShopDbContext context, UserManager<User> userManager) : base(context)
+        {
+            this.userManager = userManager;
+        }
 
-		public async Task CreateAsync(User entity, string password, string[] roles)
-		{
-			var result = await userManager.CreateAsync(entity);
+        public async Task CreateAsync(User entity, string password, string[] roles)
+        {
+            var result = await this.userManager.CreateAsync(entity);
 
-			if (result.Succeeded)
-			{
-				await userManager.AddPasswordAsync(entity, password);
-				await userManager.AddToRolesAsync(entity, roles);
-			}
-		}
+            if (result.Succeeded)
+            {
+                await this.userManager.AddPasswordAsync(entity, password);
+                await this.userManager.AddToRolesAsync(entity, roles);
+            }
+        }
 
-		public override async void ForceDeleteAsync(User entity)
-		{
-			await userManager.DeleteAsync(entity);
-		}
+        public override async void ForceDelete(User entity)
+        {
+            await this.userManager.DeleteAsync(entity);
+        }
 
-		public override async void UpdateAsync(User entity)
-		{
-			await userManager.UpdateAsync(entity);
-		}
-	}
+        public async Task<bool> IsEmailAvailable(string email)
+        {
+            var result = await this.userManager.FindByEmailAsync(email);
+
+            if (result != null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public async Task<bool> IsUserNameAvailable(string userName)
+        {
+            var result = await this.userManager.FindByNameAsync(userName);
+
+            if (result != null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public override async void Update(User entity)
+        {
+            await this.userManager.UpdateAsync(entity);
+        }
+    }
 }

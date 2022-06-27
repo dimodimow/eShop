@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace eShop.Services.Interfaces
 {
-	public interface ICategoryService
-	{
-		Task CreateAsync(CreateCategoryModel model);
-		Task UpdateAsync(Category entity);
-		Task DeleteAsync(Guid id);
-		Task ForceDeleteAsync(Guid id);
-		Task<Category> GetByIdAsync(Guid id);
-		Task<IEnumerable<Category>> GetAllAsync(string includings, string orderBy);
-	}
+    public interface ICategoryService
+    {
+        Task CreateAsync(CategoryModel model);
+        Task UpdateAsync(CategoryModel model);
+        Task DeleteAsync(Guid id);
+        Task ForceDeleteAsync(Guid id);
+        Task<Category> GetByIdAsync(Guid id);
+        Task<IEnumerable<Category>> GetAllAsync(string orderBy);
+    }
 }
