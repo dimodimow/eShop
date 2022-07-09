@@ -14,8 +14,8 @@ namespace eShop.Repositories.Interfaces
         void Update(TEntity entity);
         void Delete(TEntity entity);
         void ForceDelete(TEntity entity);
-        Task<TEntity> GetByIdAsync(Guid id);
-        Task<IEnumerable<TEntity>> GetAllAsync(string[] includings,
+        Task<TEntity> GetAsync(Guid id);
+        Task<IEnumerable<TEntity>> GetAllAsync(Expression<Func<TEntity, object>>[] includings = null,
            Expression<Func<TEntity, bool>> filter = null,
            Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null);
     }

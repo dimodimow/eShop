@@ -1,4 +1,5 @@
 ﻿using eShop.Entities;
+using eShop.Services.Filters;
 using eShop.Services.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace eShop.Services.Interfaces
         Task UpdateAsync(CategoryModel model);
         Task DeleteAsync(Guid id);
         Task ForceDeleteAsync(Guid id);
-        Task<Category> GetByIdAsync(Guid id);
-        Task<IEnumerable<Category>> GetAllAsync(string orderBy);
+        Task<Category> GetAsync(Guid id);
+        Task<IEnumerable<Category>> GetAllAsync(CategoryQueryParams queryParams);
     }
 }
