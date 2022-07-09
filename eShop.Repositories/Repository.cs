@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace eShop.Repositories.Base
 {
     public class Repository<TEntity> : IRepository<TEntity>
-        where TEntity : class, IBaseEntity
+        where TEntity : class, IBaseEntity, new()
     {
         private readonly EShopDbContext context;
 
@@ -41,13 +41,14 @@ namespace eShop.Repositories.Base
             this.entities.Remove(entity);
         }
 
-        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(string[] includings,
+        public virtual async Task<IEnumerable<TEntity>> GetAllAsync(
+            Expression<Func<TEntity, object>>[] includings = null,
             Expression<Func<TEntity, bool>> filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null)
         {
             var query = this.entities.AsQueryable();
 
-            if (includings.Length > 0)
+            if (includings != null)
             {
                 foreach (var including in includings)
                 {
@@ -68,7 +69,7 @@ namespace eShop.Repositories.Base
             return await query.ToListAsync();
         }
 
-        public virtual async Task<TEntity> GetByIdAsync(Guid id)
+        public virtual async Task<TEntity> GetAsync(Guid id)
         {
             var entity = await this.entities.FirstOrDefaultAsync(x => x.Id == id);
 

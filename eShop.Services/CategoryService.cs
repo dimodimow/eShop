@@ -2,11 +2,13 @@
 using eShop.Common.Constants;
 using eShop.Entities;
 using eShop.Repositories.Interfaces;
+using eShop.Services.Filters;
 using eShop.Services.Interfaces;
 using eShop.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace eShop.Services
@@ -39,7 +41,7 @@ namespace eShop.Services
 
         public async Task DeleteAsync(Guid id)
         {
-            var category = await this.unitOfWork.CategoryRepository.GetByIdAsync(id);
+            var category = await this.unitOfWork.CategoryRepository.GetAsync(id);
 
             Helper.CheckIsEntityNull(category, ExceptionMessages.CategoryIsNull);
 
@@ -50,7 +52,7 @@ namespace eShop.Services
 
         public async Task ForceDeleteAsync(Guid id)
         {
-            var category = await this.unitOfWork.CategoryRepository.GetByIdAsync(id);
+            var category = await this.unitOfWork.CategoryRepository.GetAsync(id);
 
             Helper.CheckIsEntityNull(category, ExceptionMessages.CategoryIsNull);
 
@@ -59,14 +61,20 @@ namespace eShop.Services
             await this.unitOfWork.SaveChangesAsync();
         }
 
-        public Task<IEnumerable<Category>> GetAllAsync(string orderBy)
+        public async Task<IEnumerable<Category>> GetAllAsync(CategoryQueryParams queryParams)
         {
-            throw new NotImplementedException();
+            Func<IQueryable<Category>, IOrderedQueryable<Category>> orderBy = queryParams == null ? null : this.OrderByFunc(queryParams?.OrderBy);
+
+            var filter = queryParams == null ? null : Filter(queryParams);
+
+            var categories = await this.unitOfWork.CategoryRepository.GetAllAsync(Includings(), filter, orderBy);
+
+            return categories;
         }
 
-        public async Task<Category> GetByIdAsync(Guid id)
+        public async Task<Category> GetAsync(Guid id)
         {
-            var category = await this.unitOfWork.CategoryRepository.GetByIdAsync(id);
+            var category = await this.unitOfWork.CategoryRepository.GetAsync(id);
 
             Helper.CheckIsEntityNull(category, ExceptionMessages.CategoryIsNull);
 
@@ -75,7 +83,7 @@ namespace eShop.Services
 
         public async Task UpdateAsync(CategoryModel model)
         {
-            var categoryToUpdate = await this.unitOfWork.CategoryRepository.GetByIdAsync(model.Id);
+            var categoryToUpdate = await this.unitOfWork.CategoryRepository.GetAsync(model.Id);
 
             Helper.CheckIsEntityNull(categoryToUpdate, ExceptionMessages.CategoryIsNull);
 
@@ -89,6 +97,48 @@ namespace eShop.Services
             this.unitOfWork.CategoryRepository.Update(categoryToUpdate);
 
             await this.unitOfWork.SaveChangesAsync();
+        }
+
+        private static Expression<Func<Category, bool>> Filter(CategoryQueryParams filter)
+        {
+            Expression<Func<Category, bool>> expressionFilter = category => filter.Name == null || category.Name.Contains(filter.Name);
+
+            return expressionFilter;
+        }
+
+        private static Expression<Func<Category, object>>[] Includings()
+        {
+            return new Expression<Func<Category, object>>[]
+            {
+                x => x.CreatedBy,
+                x => x.ModifiedBy,
+                x => x.CategoryProducts
+            };
+        }
+
+        private Func<IQueryable<Category>, IOrderedQueryable<Category>> OrderByFunc(string orderBy)
+        {
+            IOrderedQueryable<Category> OrderBy(IQueryable<Category> query)
+            {
+                var ordered = query.OrderBy(x => x);
+
+                foreach (var item in orderBy.Split(","))
+                {
+                    switch (item)
+                    {
+                        case "name":
+                            ordered.OrderBy(x => x.Name);
+                            break;
+                        case "descName":
+                            ordered.OrderByDescending(x => x.Name);
+                            break;
+                    }
+                }
+
+                return ordered;
+            }
+
+            return OrderBy;
         }
     }
 }
